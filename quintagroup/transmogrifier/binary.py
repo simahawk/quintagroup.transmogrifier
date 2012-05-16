@@ -53,6 +53,16 @@ class FileExporterSection(object):
                 binary_fields = {}
                 binary_field_names = []
                 for field in schema.keys():
+                    try:
+                        obj.isBinary(field)
+                    except UnicodeEncodeError,e:
+                        import os
+                        path = os.environ.get('HOME') + '/export_report.txt'
+                        ff= open(path,'a')
+                        ff.write('FAILED: %s\n%s\n' % ('/'.join(self.context.getPhysicalPath()),
+                                                       str(e)))
+                        ff.close()
+                        continue
                     if obj.isBinary(field):
                         binary_field_names.append(field)
                         if not self.condition(item, context=obj, fname=field):

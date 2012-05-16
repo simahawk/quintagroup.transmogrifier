@@ -32,7 +32,17 @@ class ReferenceExporter(object):
         """
         if xml is None:
             return u"";
-        doc = minidom.parseString(xml)
+        try:
+            doc = minidom.parseString(xml)
+        except Exception,e:
+            # import ipdb;ipdb.set_trace()
+            import os
+            path = os.environ.get('HOME') + '/export_report.txt'
+            ff= open(path,'a')
+            ff.write('FAILED: %s\n%s\n' % ('/'.join(self.context.getPhysicalPath()),
+                                           str(e)))
+            ff.close()
+            return u""
         root = doc.documentElement
         for fname in self.context.Schema().keys():
             if not isinstance(self.context.Schema()[fname], atapi.ReferenceField):

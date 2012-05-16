@@ -29,7 +29,15 @@ class ReferenceImporter(object):
         uid = self.getUID(data['data'])
         if uid:
             EXISTING_UIDS[uid] = None
-        data['data'] = self.importReferences(data['data'])
+        try:
+            data['data'] = self.importReferences(data['data'])
+        except Exception,e:
+            import os
+            path = os.environ.get('HOME') + '/import_report.txt'
+            ff= open(path,'a')
+            ff.write('FAILED: %s\n%s\n' % ('/'.join(self.context.getPhysicalPath()),
+                                           str(e)))
+            ff.close()
         return data
 
     def getUID(self, xml):
